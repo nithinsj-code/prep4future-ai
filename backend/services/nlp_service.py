@@ -1,28 +1,38 @@
-import spacy
-from keybert import KeyBERT
-from sentence_transformers import SentenceTransformer, util
-import os
+import math
+import re
+from collections import Counter
 
-# Load spaCy model
-try:
-    nlp = spacy.load("en_core_web_sm")
-except:
-    # In production/local, this might need to be downloaded
-    import subprocess
-    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-    nlp = spacy.load("en_core_web_sm")
 
-kw_model = KeyBERT()
-similarity_model = SentenceTransformer('all-MiniLM-L6-v2')
+STOP_WORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from",
+    "has", "have", "in", "is", "it", "of", "on", "or", "that", "the",
+    "this", "to", "with", "you", "your", "we", "our", "will", "can",
+    "using", "use", "used", "work", "working", "experience", "role",
+}
 
-def extract_keywords(text: str, top_n: int = 10):
-    """Extract top keywords from text using KeyBERT."""
-    keywords = kw_model.extract_keywords(text, keyphrase_ngram_range=(1, 2), stop_words='english', top_n=top_n)
-    return [kw[0] for kw in keywords]
+
+def _tokenize(text: str) -> list[str]:
+    words = re.findall(r"[a-zA-Z][a-zA-Z0-9+#.-]*", text.lower())
+    return [word for word in words if len(word) > 2 and word not in STOP_WORDS]
+
+
+def _cosine_similarity(tokens1: list[str], tokens2: list[str]) -> float:
+    counts1 = Counter(tokens1)
+    counts2 = Counter(tokens2)
+    common_terms = set(counts1) & set(counts2)
+
+    numerator = sum(counts1[term] * counts2[term] for term in common_terms)
+    norm1 = math.sqrt(sum(value * value for value in counts1.values()))
+    norm2 = math.sqrt(sum(value * value for value in counts2.values()))
+
+    if not norm1 or not norm2:
+        return 0.0
+
+    return numerator / (norm1 * norm2)
+
 
 def compute_similarity(text1: str, text2: str) -> float:
-    """Compute semantic similarity between two texts."""
-    embeddings1 = similarity_model.encode(text1, convert_to_tensor=True)
-    embeddings2 = similarity_model.encode(text2, convert_to_tensor=True)
-    cosine_scores = util.cos_sim(embeddings1, embeddings2)
-    return float(cosine_scores[0][0])
+    """Compute a lightweight resume/JD similarity score without heavy ML deps."""
+    tokens1 = _tokenize(text1)
+    tokens2 = _tokenize(text2)
+    return _cosine_similarity(tokens1, tokens2)
