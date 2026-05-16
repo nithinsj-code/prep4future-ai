@@ -78,7 +78,7 @@ const ResumeAnalyzer: React.FC = () => {
       setResumeAnalysis(response.data);
     } catch (error: any) {
       console.error("Analysis failed", error);
-      const errorMsg = error.response?.data?.detail || "Analysis failed. Please check your connection and try again.";
+      const errorMsg = error.response?.data?.detail || error.message || "Analysis failed. Please check your connection and try again.";
       alert(errorMsg);
     } finally {
       setIsAnalyzing(false);

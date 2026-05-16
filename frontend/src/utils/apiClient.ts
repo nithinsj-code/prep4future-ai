@@ -13,7 +13,7 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (!err.response || err.code === "ECONNABORTED") {
-      throw new Error("Backend is waking up — this may take 30 seconds. Please try again.");
+      throw new Error("Could not reach the backend. Check VITE_API_URL, CORS, or wait for Render to wake up.");
     }
     return Promise.reject(err);
   }
