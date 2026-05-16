@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Upload, FileText, CheckCircle, AlertTriangle, ArrowRight, Loader2 } from 'lucide-react';
@@ -38,6 +38,11 @@ const ResumeAnalyzer: React.FC = () => {
   const [jobDescription, setJobDescription] = useState("");
   const [extractedText, setExtractedText] = useState(state.resume.text || "");
   const [fileName, setFileName] = useState(state.resume.fileName || "");
+
+  useEffect(() => {
+    setExtractedText(state.resume.text || "");
+    setFileName(state.resume.fileName || "");
+  }, [state.resume.text, state.resume.fileName]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

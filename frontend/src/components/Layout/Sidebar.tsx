@@ -1,7 +1,8 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FileText, Mic2, MessageSquare, BarChart3, BookOpen } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { FileText, Mic2, MessageSquare, BarChart3, BookOpen, RotateCcw } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useAppContext } from '../../context/AppContext';
 
 const navItems = [
   { path: '/', label: 'Overview', icon: BookOpen },
@@ -12,6 +13,17 @@ const navItems = [
 ];
 
 export const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
+  const { clearState } = useAppContext();
+
+  const handleResetSession = () => {
+    const confirmed = window.confirm("Clear all resume, interview, coach, and report data?");
+    if (!confirmed) return;
+
+    clearState();
+    navigate('/resume');
+  };
+
   return (
     <aside className="w-64 h-screen border-r border-border bg-white flex flex-col p-6 sticky top-0">
       <div className="flex items-center gap-3 mb-12">
@@ -45,6 +57,15 @@ export const Sidebar: React.FC = () => {
           </NavLink>
         ))}
       </nav>
+
+      <button
+        type="button"
+        onClick={handleResetSession}
+        className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all duration-300 group"
+      >
+        <RotateCcw size={20} className="transition-transform group-hover:rotate-[-20deg]" />
+        <span className="font-semibold">Fresh Session</span>
+      </button>
     </aside>
   );
 };
