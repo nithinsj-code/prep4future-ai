@@ -4,6 +4,32 @@ import { Button } from '../components/ui/Button';
 import { Upload, FileText, CheckCircle, AlertTriangle, ArrowRight, Loader2 } from 'lucide-react';
 import { resumeAPI } from '../utils/apiClient';
 import { useAppContext } from '../context/AppContext';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
+const extractPdfInBrowser = async (file: File): Promise<string> => {
+  const data = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data }).promise;
+  const pages: string[] = [];
+
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+    const page = await pdf.getPage(pageNumber);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .map((item) => ('str' in item ? item.str : ''))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (pageText) {
+      pages.push(pageText);
+    }
+  }
+
+  return pages.join('\n\n').trim();
+};
 
 const ResumeAnalyzer: React.FC = () => {
   const { state, setResumeText, setResumeAnalysis } = useAppContext();
@@ -25,6 +51,17 @@ const ResumeAnalyzer: React.FC = () => {
       setResumeText(response.data.text, file.name);
     } catch (error: any) {
       console.error("Extraction failed", error);
+      try {
+        const browserText = await extractPdfInBrowser(file);
+        if (browserText) {
+          setExtractedText(browserText);
+          setResumeText(browserText, file.name);
+          return;
+        }
+      } catch (browserError) {
+        console.error("Browser PDF extraction failed", browserError);
+      }
+
       const errorMsg = error.response?.data?.detail || "Failed to extract text from PDF. Please paste it manually.";
       alert(errorMsg);
     } finally {
