@@ -2,7 +2,9 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
 from services.groq_client import call_groq_json
 from services.nlp_service import compute_similarity
-import pdfplumber, io
+from PyPDF2 import PdfReader
+import io
+import pdfplumber
 
 router = APIRouter()
 
@@ -10,23 +12,55 @@ class AnalyzeRequest(BaseModel):
     resume_text: str
     job_description: str
 
+
+def _clean_text(text: str) -> str:
+    return "\n".join(line.strip() for line in text.splitlines() if line.strip())
+
+
+def _extract_with_pdfplumber(content: bytes) -> str:
+    text_parts: list[str] = []
+    with pdfplumber.open(io.BytesIO(content)) as pdf:
+        for page in pdf.pages:
+            extracted = page.extract_text(x_tolerance=1, y_tolerance=3, layout=True)
+            if extracted:
+                text_parts.append(extracted)
+    return _clean_text("\n".join(text_parts))
+
+
+def _extract_with_pypdf2(content: bytes) -> str:
+    text_parts: list[str] = []
+    reader = PdfReader(io.BytesIO(content))
+    for page in reader.pages:
+        extracted = page.extract_text()
+        if extracted:
+            text_parts.append(extracted)
+    return _clean_text("\n".join(text_parts))
+
+
 @router.post("/extract")
 async def extract_resume_text(file: UploadFile = File(...)):
-    """Extract text from uploaded PDF resume using pdfplumber."""
+    """Extract text from uploaded PDF resume using multiple PDF parsers."""
+    if file.content_type and file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Please upload a PDF file.")
+
     try:
         content = await file.read()
-        text = ""
-        with pdfplumber.open(io.BytesIO(content)) as pdf:
-            for page in pdf.pages:
-                extracted = page.extract_text()
-                if extracted:
-                    text += extracted + "\n"
+        if not content:
+            raise HTTPException(status_code=400, detail="The uploaded PDF is empty.")
 
-        if not text.strip():
-            # Fallback to a simpler extraction if pdfplumber fails
-            raise HTTPException(status_code=400, detail="Could not extract text from PDF. It might be an image-only PDF.")
+        text = _extract_with_pdfplumber(content)
+        if not text:
+            text = _extract_with_pypdf2(content)
+
+        if not text:
+            raise HTTPException(
+                status_code=422,
+                detail="No selectable text was found in this PDF. If it is a scanned/image resume, convert it with OCR or paste the resume text manually.",
+            )
 
         return {"text": text}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF Extraction failed: {str(e)}")
 

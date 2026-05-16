@@ -23,9 +23,10 @@ const ResumeAnalyzer: React.FC = () => {
       const response = await resumeAPI.extract(file);
       setExtractedText(response.data.text);
       setResumeText(response.data.text, file.name);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Extraction failed", error);
-      alert("Failed to extract text from PDF. Please paste it manually.");
+      const errorMsg = error.response?.data?.detail || "Failed to extract text from PDF. Please paste it manually.";
+      alert(errorMsg);
     } finally {
       setIsExtracting(false);
     }
