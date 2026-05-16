@@ -48,14 +48,29 @@ async def extract_resume_text(file: UploadFile = File(...)):
         if not content:
             raise HTTPException(status_code=400, detail="The uploaded PDF is empty.")
 
-        text = _extract_with_pdfplumber(content)
-        if not text:
-            text = _extract_with_pypdf2(content)
+        errors: list[str] = []
+        text = ""
+
+        for extractor_name, extractor in (
+            ("pdfplumber", _extract_with_pdfplumber),
+            ("PyPDF2", _extract_with_pypdf2),
+        ):
+            try:
+                text = extractor(content)
+            except Exception as e:
+                errors.append(f"{extractor_name}: {str(e)}")
+                continue
+
+            if text:
+                break
 
         if not text:
+            detail = "No selectable text was found in this PDF. If it is a scanned/image resume, convert it with OCR or paste the resume text manually."
+            if errors:
+                detail += f" Parser details: {'; '.join(errors)}"
             raise HTTPException(
                 status_code=422,
-                detail="No selectable text was found in this PDF. If it is a scanned/image resume, convert it with OCR or paste the resume text manually.",
+                detail=detail,
             )
 
         return {"text": text}
