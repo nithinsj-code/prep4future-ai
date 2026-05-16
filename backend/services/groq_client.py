@@ -5,11 +5,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 MODEL = "llama-3.3-70b-versatile"
+
+
+def _get_client() -> Groq:
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        raise RuntimeError("GROQ_API_KEY is not configured.")
+    return Groq(api_key=api_key)
+
 
 def call_groq(system_prompt: str, user_message: str, max_tokens: int = 1500) -> str:
     """Call Groq API with llama-3.3-70b-versatile and return text response."""
+    client = _get_client()
     response = client.chat.completions.create(
         model=MODEL,
         messages=[
@@ -38,6 +46,7 @@ def call_groq_json(system_prompt: str, user_message: str, max_tokens: int = 1500
 
 def call_groq_chat(system_prompt: str, messages: list, max_tokens: int = 1000) -> str:
     """Call Groq with full conversation history (for career coach)."""
+    client = _get_client()
     response = client.chat.completions.create(
         model=MODEL,
         messages=[{"role": "system", "content": system_prompt}] + messages,
