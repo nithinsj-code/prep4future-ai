@@ -66,15 +66,15 @@ const CareerCoach: React.FC = () => {
 
   if (!state.interview.isComplete) {
     return (
-      <div className="max-w-2xl mx-auto py-20 text-center animate-fade-up">
-        <div className="w-20 h-20 bg-blue-50 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+      <div className="max-w-2xl mx-auto px-4 py-16 md:py-20 text-center animate-fade-up">
+        <div className="w-20 h-20 bg-blue-50 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm shrink-0">
           <Bot size={40} />
         </div>
-        <h2 className="text-3xl font-bold text-slate-900 mb-4">Interview Session Required</h2>
-        <p className="text-slate-500 mb-8 leading-relaxed">
+        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Interview Session Required</h2>
+        <p className="text-slate-500 mb-8 leading-relaxed text-sm md:text-base">
           I'm your performance coach! To give you the best advice, I need to see how you handle a mock interview first.
         </p>
-        <Button onClick={() => window.location.href = '/interview'} className="h-14 px-8 text-lg shadow-lg shadow-primary/20">
+        <Button onClick={() => window.location.href = '/interview'} className="h-12 md:h-14 px-8 text-base md:text-lg shadow-lg shadow-primary/20">
           Start Mock Interview
         </Button>
       </div>
@@ -82,61 +82,61 @@ const CareerCoach: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-160px)] flex flex-col animate-fade-up">
-      <div className="flex items-center justify-between mb-6">
+    <div className="h-[calc(100vh-130px)] md:h-[calc(100vh-160px)] flex flex-col animate-fade-up">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 md:mb-6 gap-2">
         <div>
-          <h1 className="text-4xl tracking-tight mb-2 font-bold text-slate-900">Career Coach AI</h1>
-          <p className="text-slate-500">Your personal mentor for career growth and strategy.</p>
+          <h1 className="text-3xl md:text-4xl tracking-tight mb-1 font-bold text-slate-900">Career Coach AI</h1>
+          <p className="text-sm md:text-base text-slate-500">Your personal mentor for career growth and strategy.</p>
         </div>
       </div>
 
       <div className="flex-1 flex gap-8 min-h-0">
-        <div className="flex-1 flex flex-col bg-white border border-border rounded-3xl overflow-hidden relative shadow-sm">
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6">
+        <div className="flex-1 flex flex-col bg-white border border-border rounded-2xl sm:rounded-3xl overflow-hidden relative shadow-sm">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-4 sm:space-y-6">
             {state.coach.messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`flex gap-4 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-blue-50 text-primary' : 'bg-slate-50 text-slate-600'}`}>
-                    {msg.role === 'user' ? <User size={20} /> : <Bot size={20} />}
+                <div className={`flex gap-3 sm:gap-4 max-w-[85%] sm:max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-blue-50 text-primary' : 'bg-slate-50 text-slate-600'}`}>
+                    {msg.role === 'user' ? <User size={18} /> : <Bot size={18} />}
                   </div>
-                  <div className={`p-4 rounded-2xl ${msg.role === 'user' ? 'bg-primary text-white rounded-tr-none shadow-md shadow-primary/10' : 'bg-slate-50 border border-slate-100 text-slate-700 rounded-tl-none'}`}>
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  <div className={`p-3 sm:p-4 rounded-2xl ${msg.role === 'user' ? 'bg-primary text-white rounded-tr-none shadow-md shadow-primary/10' : 'bg-slate-50 border border-slate-100 text-slate-700 rounded-tl-none'}`}>
+                    <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                   </div>
                 </div>
               </div>
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center shrink-0">
-                    <Bot size={20} />
+                <div className="flex gap-3 sm:gap-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center shrink-0">
+                    <Bot size={18} />
                   </div>
-                  <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl rounded-tl-none flex items-center gap-2">
-                    <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:0.4s]" />
+                  <div className="bg-slate-50 border border-slate-100 p-3 sm:p-4 rounded-2xl rounded-tl-none flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" />
+                    <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:0.2s]" />
+                    <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:0.4s]" />
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="p-6 bg-slate-50 border-t border-border">
-            <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-4">
+          <div className="p-4 sm:p-6 bg-slate-50 border-t border-border">
+            <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-3">
               <input
-                className="input-field flex-1 h-12 shadow-sm"
+                className="input-field flex-1 h-11 sm:h-12 shadow-sm text-sm"
                 placeholder="Ask anything about your career..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
-              <Button type="submit" className="h-12 w-12 rounded-xl p-0" isLoading={isLoading}>
-                <Send size={20} />
+              <Button type="submit" className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl p-0 shrink-0" isLoading={isLoading}>
+                <Send size={18} />
               </Button>
             </form>
           </div>
         </div>
 
-        <div className="w-80 space-y-6 hidden xl:block">
+        <div className="w-80 space-y-6 hidden xl:block shrink-0">
           <Card className="border-slate-200">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Sparkles size={18} className="text-amber-500" /> Quick Prompts
@@ -145,6 +145,7 @@ const CareerCoach: React.FC = () => {
               {quickPrompts.map((prompt, i) => (
                 <button
                   key={i}
+                  type="button"
                   onClick={() => handleSend(prompt)}
                   className="w-full text-left p-3 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-xl border border-transparent hover:border-blue-100 transition-all"
                 >

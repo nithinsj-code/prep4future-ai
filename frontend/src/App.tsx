@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Sidebar } from './components/Layout/Sidebar';
 import { TopBar } from './components/Layout/TopBar';
@@ -12,14 +12,16 @@ const CareerCoach = React.lazy(() => import('./pages/CareerCoach'));
 const Reports = React.lazy(() => import('./pages/Reports'));
 
 const App: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <AppProvider>
       <Router>
         <div className="flex min-h-screen">
-          <Sidebar />
+          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           <div className="flex-1 flex flex-col">
-            <TopBar />
-            <main className="flex-1 p-8 overflow-y-auto">
+            <TopBar onMenuClick={() => setSidebarOpen(true)} />
+            <main className="flex-1 p-4 md:p-8 overflow-y-auto">
               <React.Suspense fallback={<div className="flex items-center justify-center h-full"><div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                 <Routes>
                   <Route path="/" element={<Overview />} />
