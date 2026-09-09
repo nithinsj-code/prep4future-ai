@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "llama3-70b-8192"
+MODEL = "llama-3.1-8b-instant"
 
 
 def _get_client() -> Groq:
@@ -16,7 +16,7 @@ def _get_client() -> Groq:
 
 
 def call_groq(system_prompt: str, user_message: str, max_tokens: int = 1500) -> str:
-    """Call Groq API with llama3-70b-8192 and return text response."""
+    """Call Groq API with llama-3.1-8b-instant and return text response."""
     client = _get_client()
     response = client.chat.completions.create(
         model=MODEL,
