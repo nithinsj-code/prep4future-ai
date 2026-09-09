@@ -24,7 +24,7 @@ app.include_router(coach.router, prefix="/api/coach")
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model": "meta-llama/llama-4-maverick-17b-128e-instruct"}
+    return {"status": "ok", "model": "openai/gpt-oss-120b"}
 
 if __name__ == "__main__":
     import uvicorn

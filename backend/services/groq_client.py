@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "meta-llama/llama-4-maverick-17b-128e-instruct"
-
+MODEL = "openai/gpt-oss-120b"
 
 def _get_client() -> Groq:
     api_key = os.environ.get("GROQ_API_KEY")
@@ -16,7 +15,7 @@ def _get_client() -> Groq:
 
 
 def call_groq(system_prompt: str, user_message: str, max_tokens: int = 1500) -> str:
-    """Call Groq API with meta-llama/llama-4-maverick-17b-128e-instruct and return text response."""
+    """Call Groq API with openai/gpt-oss-120b and return text response."""
     client = _get_client()
     response = client.chat.completions.create(
         model=MODEL,
