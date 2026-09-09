@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "mixtral-8x7b-32768"
+MODEL = "meta-llama/llama-4-maverick-17b-128e-instruct"
 
 
 def _get_client() -> Groq:
@@ -16,7 +16,7 @@ def _get_client() -> Groq:
 
 
 def call_groq(system_prompt: str, user_message: str, max_tokens: int = 1500) -> str:
-    """Call Groq API with mixtral-8x7b-32768 and return text response."""
+    """Call Groq API with meta-llama/llama-4-maverick-17b-128e-instruct and return text response."""
     client = _get_client()
     response = client.chat.completions.create(
         model=MODEL,
